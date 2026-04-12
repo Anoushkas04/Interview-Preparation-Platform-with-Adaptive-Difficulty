@@ -1,0 +1,82 @@
+{% extends 'interview_prep/base.html' %}
+
+{% block title %}Dashboard | InterviewPrep{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="row mb-5 align-items-center bg-white p-5 rounded-5 shadow-sm border">
+    <div class="col-lg-7">
+        <h1 class="display-5 fw-bold mb-3">Master Your Next <span class="text-primary">Interview</span></h1>
+        <p class="lead text-muted mb-4">Practice topic-wise questions with our AI-driven adaptive difficulty engine. Challenges adjust to your skill level in real-time.</p>
+        <div class="d-flex gap-4">
+            <div class="stats-item">
+                <h2 class="fw-bold mb-0 text-primary">{{ user.userprofile.total_attempts }}</h2>
+                <small class="text-muted text-uppercase fw-semibold ls-1">Attempts</small>
+            </div>
+            <div class="vr mx-2 text-muted opacity-25"></div>
+            <div class="stats-item">
+                <h2 class="fw-bold mb-0 text-success">{{ user.userprofile.accuracy }}%</h2>
+                <small class="text-muted text-uppercase fw-semibold ls-1">Accuracy</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5 d-none d-lg-block text-center">
+        <div class="bg-primary bg-opacity-10 p-5 rounded-circle d-inline-block">
+            <i class="bi bi-rocket-takeoff text-primary" style="font-size: 6rem;"></i>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col">
+        <h3 class="fw-bold">Explore Topics</h3>
+        <p class="text-muted">Choose a category to start your adaptive practice session.</p>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for topic in topics %}
+    <div class="col">
+        <div class="card h-100 p-2">
+            <div class="card-body d-flex flex-column">
+                <div class="mb-4 d-flex align-items-center justify-content-between">
+                    <div class="icon-box bg-primary bg-opacity-10 p-3 rounded-4">
+                        <i class="bi 
+                            {% if 'Array' in topic.name %}bi-grid-3x3
+                            {% elif 'SQL' in topic.name %}bi-database-fill
+                            {% elif 'Linked' in topic.name %}bi-link-45deg
+                            {% elif 'Graph' in topic.name %}bi-diagram-3-fill
+                            {% elif 'Complexity' in topic.name %}bi-hourglass-split
+                            {% else %}bi-brain-fill{% endif %} 
+                            text-primary fs-3"></i>
+                    </div>
+                    <span class="badge bg-light text-primary border rounded-pill px-3 py-2 fw-semibold">
+                        {{ topic.questions.count }} Qs
+                    </span>
+                </div>
+                <h4 class="card-title fw-bold mb-3 text-dark">{{ topic.name }}</h4>
+                <p class="card-text text-muted mb-4">Master {{ topic.name }} through structured levels from Easy to Hard.</p>
+                <div class="mt-auto">
+                    <a href="{% url 'practice_topic' topic.id %}" class="btn btn-primary w-100 py-3 shadow-none">
+                        Start Practice <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    .icon-box {
+        width: fit-content;
+        transition: transform 0.3s ease;
+    }
+    .card:hover .icon-box {
+        transform: scale(1.1) rotate(5deg);
+    }
+    .ls-1 {
+        letter-spacing: 1px;
+    }
+</style>
+{% endblock %}

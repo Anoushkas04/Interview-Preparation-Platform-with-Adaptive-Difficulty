@@ -1,0 +1,124 @@
+{% extends 'interview_prep/base.html' %}
+
+{% block title %}Practice: {{ topic.name }} - InterviewPrep{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">{{ topic.name }}</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="fw-bold">{{ topic.name }} Practice</h2>
+            <div class="badge bg-{{ state.current_difficulty|lower }} bg-opacity-75 p-2 px-3 fs-6">
+                Current Level: {{ state.current_difficulty }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-easy { background-color: #28a745 !important; }
+    .bg-medium { background-color: #ffc107 !important; color: #000; }
+    .bg-hard { background-color: #dc3545 !important; }
+    .option-card {
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 2px solid #f0f0f0;
+    }
+    .option-card:hover {
+        border-color: #4e73df;
+        background-color: #f8f9ff;
+    }
+    input[type="radio"]:checked + label .option-card {
+        border-color: #4e73df;
+        background-color: #f8f9ff;
+        box-shadow: 0 0 10px rgba(78, 115, 223, 0.1);
+    }
+</style>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <span class="badge bg-secondary mb-2">Question</span>
+                    <h4 class="card-text fw-semibold">{{ question.text }}</h4>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="question_id" value="{{ question.id }}">
+                    
+                    <div class="options-container">
+                        <div class="mb-3">
+                            <input type="radio" name="answer" value="A" id="optA" class="btn-check" required>
+                            <label class="w-100" for="optA">
+                                <div class="option-card p-3 rounded-3 d-flex align-items-center">
+                                    <span class="fw-bold me-3">A.</span> {{ question.option_a }}
+                                </div>
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <input type="radio" name="answer" value="B" id="optB" class="btn-check">
+                            <label class="w-100" for="optB">
+                                <div class="option-card p-3 rounded-3 d-flex align-items-center">
+                                    <span class="fw-bold me-3">B.</span> {{ question.option_b }}
+                                </div>
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <input type="radio" name="answer" value="C" id="optC" class="btn-check">
+                            <label class="w-100" for="optC">
+                                <div class="option-card p-3 rounded-3 d-flex align-items-center">
+                                    <span class="fw-bold me-3">C.</span> {{ question.option_c }}
+                                </div>
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <input type="radio" name="answer" value="D" id="optD" class="btn-check">
+                            <label class="w-100" for="optD">
+                                <div class="option-card p-3 rounded-3 d-flex align-items-center">
+                                    <span class="fw-bold me-3">D.</span> {{ question.option_d }}
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top">
+                        <button type="submit" class="btn btn-primary btn-lg px-5 py-3 fw-bold rounded-pill">Submit Answer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 mb-4 bg-light">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3">Adaptive Progress</h5>
+                <p class="small text-muted mb-4">Correct answers in a row at this level: <strong>{{ state.consecutive_correct }}</strong></p>
+                
+                <div class="progress mb-2" style="height: 10px;">
+                    <div class="progress-bar bg-success" role="progressbar" 
+                         style="width: {{ state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:state.consecutive_correct|add:25 }}%" 
+                         aria-valuenow="{{ state.consecutive_correct }}" aria-valuemin="0" aria-valuemax="4"></div>
+                </div>
+                <div class="d-flex justify-content-between small text-muted">
+                    <span>0/4</span>
+                    <span>Level Up</span>
+                </div>
+                <hr>
+                <h6 class="fw-bold">How it works:</h6>
+                <ul class="small text-muted ps-3">
+                    <li>4 correct answers in a row: Move to harder questions.</li>
+                    <li>4 incorrect answers in a row: Move to easier questions.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

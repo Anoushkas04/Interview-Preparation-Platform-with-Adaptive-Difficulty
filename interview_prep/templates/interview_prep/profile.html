@@ -1,0 +1,65 @@
+{% extends 'interview_prep/base.html' %}
+
+{% block title %}Your Profile - InterviewPrep{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2 class="fw-bold">Performance Profile</h2>
+        <p class="text-muted">Analyze your overall accuracy and technical growth.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 mb-4 text-center">
+            <div class="card-body p-5">
+                <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                    <span class="text-white fs-1 fw-bold">{{ user.username|first|upper }}</span>
+                </div>
+                <h3 class="fw-bold">{{ user.username }}</h3>
+                <p class="text-muted small">Member since {{ user.date_joined|date:"M Y" }}</p>
+                <hr>
+                <div class="row text-center">
+                    <div class="col-6 border-end">
+                        <div class="fw-bold fs-4">{{ profile.total_attempts }}</div>
+                        <div class="small text-muted">Total</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="fw-bold fs-4 text-success">{{ profile.correct_answers }}</div>
+                        <div class="small text-muted">Correct</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-4">Accuracy Overview</h5>
+                <div class="text-center mb-4">
+                    <div class="display-1 fw-bold text-primary">{{ profile.accuracy }}%</div>
+                    <div class="text-muted">Your Overall Accuracy</div>
+                </div>
+                
+                <div class="progress mb-2" style="height: 25px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" 
+                         style="width: {{ profile.accuracy }}%" aria-valuenow="{{ profile.accuracy }}" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+                
+                <div class="mt-5">
+                    <h6 class="fw-bold mb-3">Topic Progress</h6>
+                    <div class="list-group list-group-flush">
+                        {% for topic in topics %}
+                            <!-- This could be enhanced to show per-topic stats if we added them -->
+                        {% endfor %}
+                        <p class="small text-muted">Detailed topic-wise progress is calculated dynamically as you practice.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

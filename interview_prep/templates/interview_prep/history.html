@@ -1,0 +1,65 @@
+{% extends 'interview_prep/base.html' %}
+
+{% block title %}Attempt History - InterviewPrep{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2 class="fw-bold">Your Attempt History</h2>
+        <p class="text-muted">Review your past performance and track your progress.</p>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 py-3">Topic</th>
+                        <th class="py-3">Question</th>
+                        <th class="py-3">Difficulty</th>
+                        <th class="py-3">Your Answer</th>
+                        <th class="py-3">Result</th>
+                        <th class="py-3">Date & Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attempt in attempts %}
+                    <tr>
+                        <td class="ps-4">{{ attempt.question.topic.name }}</td>
+                        <td class="text-truncate" style="max-width: 300px;">{{ attempt.question.text }}</td>
+                        <td>
+                            <span class="badge bg-{{ attempt.question.difficulty|lower }} bg-opacity-75">
+                                {{ attempt.question.difficulty }}
+                            </span>
+                        </td>
+                        <td class="fw-bold">{{ attempt.user_answer }}</td>
+                        <td>
+                            {% if attempt.is_correct %}
+                                <span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Correct</span>
+                            {% else %}
+                                <span class="text-danger fw-bold"><i class="bi bi-x-circle-fill"></i> Incorrect</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted small">{{ attempt.timestamp|date:"M d, Y H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            You haven't attempted any questions yet. Go to the dashboard to start!
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-easy { background-color: #28a745 !important; }
+    .bg-medium { background-color: #ffc107 !important; color: #000; }
+    .bg-hard { background-color: #dc3545 !important; }
+</style>
+{% endblock %}
