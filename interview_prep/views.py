@@ -111,17 +111,28 @@ def practice_topic(request, topic_id):
         return redirect('practice_topic', topic_id=topic.id)
 
     # GET Request: Fetch next question based on current difficulty
-    questions = Question.objects.filter(topic=topic, difficulty=state.current_difficulty)
+    # Filter questions by current difficulty
+    questions_at_level = Question.objects.filter(topic=topic, difficulty=state.current_difficulty)
     
-    if not questions.exists():
+    # Get IDs of questions already answered by this user in this topic
+    answered_ids = Attempt.objects.filter(user=request.user, question__topic=topic).values_list('question_id', flat=True)
+    
+    # Exclude answered questions from the pool
+    remaining_questions = questions_at_level.exclude(id__in=answered_ids)
+    
+    if remaining_questions.exists():
+        question = random.choice(remaining_questions)
+    elif questions_at_level.exists():
+        # If all questions at this level are answered, reset the pool (pick from all at this level)
+        question = random.choice(questions_at_level)
+    else:
         # Fallback: if no questions at current level, try any level
-        questions = Question.objects.filter(topic=topic)
-        
-    if not questions.exists():
-        messages.warning(request, "No questions available for this topic yet.")
-        return redirect('dashboard')
-        
-    question = random.choice(questions)
+        all_questions = Question.objects.filter(topic=topic)
+        if all_questions.exists():
+            question = random.choice(all_questions)
+        else:
+            messages.warning(request, "No questions available for this topic yet.")
+            return redirect('dashboard')
     
     context = {
         'topic': topic,
