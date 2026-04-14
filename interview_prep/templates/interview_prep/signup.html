@@ -1,34 +1,64 @@
 {% extends 'interview_prep/base.html' %}
 
-{% block title %}Sign Up - InterviewPrep{% endblock %}
+{% block title %}Create Account - InterviewPrep{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h2 class="text-center mb-4 fw-bold">Create Account</h2>
+<div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="col-md-8 col-lg-6 col-xl-5">
+        <div class="text-center mb-4">
+            <div class="bg-primary-soft rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                <i class="bi bi-person-plus text-primary fs-1"></i>
+            </div>
+            <h2 class="fw-bold text-dark">Join InterviewPrep</h2>
+            <p class="text-muted">Start mastering algorithms and data structures today.</p>
+        </div>
+
+        <div class="card border-0 p-2 shadow-sm">
+            <div class="card-body p-4 p-md-5">
                 <form method="post">
                     {% csrf_token %}
+                    
                     {% for field in form %}
-                        <div class="mb-3">
-                            <label class="form-label">{{ field.label }}</label>
+                        <div class="mb-4">
+                            <label class="form-label text-dark fw-bold mb-2">{{ field.label }}</label>
                             {{ field }}
                             {% if field.help_text %}
-                                <div class="form-text text-muted" style="font-size: 0.8rem;">{{ field.help_text }}</div>
+                                <div class="form-text text-muted mt-2" style="font-size: 0.8rem; line-height: 1.4;"><i class="bi bi-info-circle me-1"></i>{{ field.help_text }}</div>
                             {% endif %}
                             {% for error in field.errors %}
-                                <div class="text-danger small">{{ error }}</div>
+                                <div class="text-danger small mt-2 fw-medium"><i class="bi bi-exclamation-triangle me-1"></i>{{ error }}</div>
                             {% endfor %}
                         </div>
                     {% endfor %}
-                    <button type="submit" class="btn btn-primary w-100 py-2">Sign Up</button>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-pill mt-3 mb-4 shadow-sm">Create Account</button>
                 </form>
-                <div class="text-center mt-3">
-                    <p class="mb-0">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+                
+                <div class="text-center border-top pt-4">
+                    <p class="text-muted small mb-0">Already have an account? <a href="{% url 'login' %}" class="fw-bold text-primary text-decoration-none">Sign In instead</a></p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Ensure Django forms get the right Bootstrap class */
+    input[type="text"], input[type="password"], input[type="email"] {
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        padding: 0.8rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        background-color: var(--bg-main);
+        width: 100%;
+        display: block;
+    }
+    input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
+        background-color: var(--surface-color);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        outline: none;
+    }
+</style>
 {% endblock %}

@@ -3,60 +3,71 @@
 {% block title %}Your Profile - InterviewPrep{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col">
-        <h2 class="fw-bold">Performance Profile</h2>
-        <p class="text-muted">Analyze your overall accuracy and technical growth.</p>
-    </div>
+<div class="mb-4">
+    <h2 class="fw-bold text-dark mb-1">Performance Profile</h2>
+    <p class="text-muted mb-0">Track your overall accuracy and technical growth over time.</p>
 </div>
 
-<div class="row">
+<div class="row g-4">
+    <!-- User Card -->
     <div class="col-md-4">
-        <div class="card shadow-sm border-0 mb-4 text-center">
-            <div class="card-body p-5">
-                <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
-                    <span class="text-white fs-1 fw-bold">{{ user.username|first|upper }}</span>
-                </div>
-                <h3 class="fw-bold">{{ user.username }}</h3>
-                <p class="text-muted small">Member since {{ user.date_joined|date:"M Y" }}</p>
-                <hr>
-                <div class="row text-center">
-                    <div class="col-6 border-end">
-                        <div class="fw-bold fs-4">{{ profile.total_attempts }}</div>
-                        <div class="small text-muted">Total</div>
+        <div class="card border-0 p-3 h-100">
+            <div class="card-body text-center d-flex flex-column align-items-center justify-content-center">
+                <div class="position-relative mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center shadow" 
+                         style="width: 120px; height: 120px; background: linear-gradient(135deg, #4f46e5, #0ea5e9);">
+                        <span class="text-white fw-bold" style="font-size: 3rem;">{{ user.username|first|upper }}</span>
                     </div>
-                    <div class="col-6">
-                        <div class="fw-bold fs-4 text-success">{{ profile.correct_answers }}</div>
-                        <div class="small text-muted">Correct</div>
+                    <div class="position-absolute bottom-0 end-0 bg-success rounded-circle border border-3 border-white" style="width: 24px; height: 24px;"></div>
+                </div>
+                <h3 class="fw-bold text-dark mb-1">{{ user.username }}</h3>
+                <p class="text-muted small fw-medium mb-4"><i class="bi bi-calendar3 me-2"></i>Joined {{ user.date_joined|date:"F Y" }}</p>
+                
+                <div class="w-100 bg-light rounded-4 p-3 d-flex justify-content-around">
+                    <div>
+                        <div class="small text-muted text-uppercase fw-bold mb-1" style="letter-spacing: 0.5px;">Attempted</div>
+                        <div class="fs-3 fw-bold text-dark">{{ profile.total_attempts }}</div>
+                    </div>
+                    <div class="vr bg-secondary opacity-25"></div>
+                    <div>
+                        <div class="small text-muted text-uppercase fw-bold mb-1" style="letter-spacing: 0.5px;">Correct</div>
+                        <div class="fs-3 fw-bold text-success">{{ profile.correct_answers }}</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Stats Card -->
     <div class="col-md-8">
-        <div class="card shadow-sm border-0 mb-4">
+        <div class="card border-0 p-3 h-100">
             <div class="card-body p-4">
-                <h5 class="fw-bold mb-4">Accuracy Overview</h5>
-                <div class="text-center mb-4">
-                    <div class="display-1 fw-bold text-primary">{{ profile.accuracy }}%</div>
-                    <div class="text-muted">Your Overall Accuracy</div>
-                </div>
+                <h5 class="fw-bold mb-4 text-dark d-flex align-items-center">
+                    <i class="bi bi-bullseye text-primary me-2 fs-4"></i> Global Accuracy
+                </h5>
                 
-                <div class="progress mb-2" style="height: 25px;">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" 
-                         style="width: {{ profile.accuracy }}%" aria-valuenow="{{ profile.accuracy }}" aria-valuemin="0" aria-valuemax="100">
+                <div class="bg-primary-soft rounded-4 p-5 text-center mb-5 position-relative overflow-hidden">
+                    <i class="bi bi-percent position-absolute text-primary opacity-10" style="font-size: 15rem; right: -20px; top: -50px; transform: rotate(15deg);"></i>
+                    <div class="position-relative z-1">
+                        <div class="display-1 fw-bold text-primary mb-2" style="letter-spacing: -2px;">{{ profile.accuracy }}<span class="fs-2">%</span></div>
+                        <div class="text-primary fw-medium">Overall Correct Answer Rate</div>
                     </div>
                 </div>
                 
-                <div class="mt-5">
-                    <h6 class="fw-bold mb-3">Topic Progress</h6>
-                    <div class="list-group list-group-flush">
-                        {% for topic in topics %}
-                            <!-- This could be enhanced to show per-topic stats if we added them -->
-                        {% endfor %}
-                        <p class="small text-muted">Detailed topic-wise progress is calculated dynamically as you practice.</p>
+                <h6 class="fw-bold mb-3 text-dark">Accuracy Breakdown</h6>
+                <div class="progress" style="height: 12px; border-radius: 6px; background-color: var(--border-light);">
+                    <div class="progress-bar bg-primary" role="progressbar" 
+                         style="width: {{ profile.accuracy }}%; border-radius: 6px;" 
+                         aria-valuenow="{{ profile.accuracy }}" aria-valuemin="0" aria-valuemax="100">
                     </div>
+                </div>
+                <div class="d-flex justify-content-between mt-2 small fw-medium text-muted">
+                    <span>0%</span>
+                    <span>100%</span>
+                </div>
+                
+                <div class="mt-4 pt-4 border-top">
+                    <p class="small text-muted mb-0"><i class="bi bi-lightbulb text-warning me-2"></i><strong>Pro Tip:</strong> Aim for an accuracy of 75%+ across all topics to ensure you are fully prepared for technical interviews. The adaptive engine will help you get there by targeting your weak points.</p>
                 </div>
             </div>
         </div>

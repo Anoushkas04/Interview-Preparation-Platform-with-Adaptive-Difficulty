@@ -1,27 +1,38 @@
 {% extends 'interview_prep/base.html' %}
 
-{% block title %}Login - InterviewPrep{% endblock %}
+{% block title %}Sign In - InterviewPrep{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h2 class="text-center mb-4 fw-bold">Login</h2>
+<div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="col-md-6 col-lg-5 col-xl-4">
+        <div class="text-center mb-4">
+            <div class="bg-primary-soft rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                <i class="bi bi-box-arrow-in-right text-primary fs-1"></i>
+            </div>
+            <h2 class="fw-bold text-dark">Welcome Back</h2>
+            <p class="text-muted">Please sign in to continue your practice.</p>
+        </div>
+
+        <div class="card border-0 p-2 shadow-sm">
+            <div class="card-body p-4 p-md-5">
                 <form method="post">
                     {% csrf_token %}
-                    <div class="mb-3">
-                        <label class="form-label">Username</label>
-                        <input type="text" name="username" class="form-control" required>
+                    
+                    <div class="form-floating mb-4">
+                        <input type="text" name="username" class="form-control" id="floatingUsername" placeholder="Username" required>
+                        <label for="floatingUsername" class="text-muted"><i class="bi bi-person me-2"></i>Username</label>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" required>
+                    
+                    <div class="form-floating mb-4">
+                        <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" required>
+                        <label for="floatingPassword" class="text-muted"><i class="bi bi-key me-2"></i>Password</label>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100 py-2">Login</button>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-pill mb-4 shadow-sm">Sign In</button>
                 </form>
-                <div class="text-center mt-3">
-                    <p class="mb-0">Don't have an account? <a href="{% url 'signup' %}">Sign Up</a></p>
+                
+                <div class="text-center border-top pt-4">
+                    <p class="text-muted small mb-0">Don't have an account? <a href="{% url 'signup' %}" class="fw-bold text-primary text-decoration-none">Create one for free</a></p>
                 </div>
             </div>
         </div>
