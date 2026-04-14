@@ -1,6 +1,5 @@
 import os
 import django
-import random
 
 # Setup Django environment
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wpl_project_db.settings')
@@ -8,201 +7,167 @@ django.setup()
 
 from interview_prep.models import Topic, Question
 
+def add_questions(topic_name, questions):
+    topic, _ = Topic.objects.get_or_create(name=topic_name)
+    count = 0
+    for q in questions:
+        if not Question.objects.filter(topic=topic, text=q[0]).exists():
+            Question.objects.create(
+                topic=topic, text=q[0], difficulty=q[1],
+                option_a=q[2][0], option_b=q[2][1], option_c=q[2][2], option_d=q[2][3],
+                correct_option=q[3]
+            )
+            count += 1
+    print(f"Added {count} new questions to {topic_name}")
+
 def populate():
+    # Format: [Text, Difficulty, [OptA, OptB, OptC, OptD], CorrectAns]
     data = {
         "Arrays": [
-            # Easy
-            {"text": "What is the index of the first element in an array?", "diff": "Easy", "opts": ["0", "1", "-1", "Depends on language"], "ans": "A"},
-            {"text": "Which operation in an array has O(1) time complexity?", "diff": "Easy", "opts": ["Searching", "Accessing by index", "Deletion", "Insertion"], "ans": "B"},
-            {"text": "What is the maximum number of elements a fixed-size array of size 10 can hold?", "diff": "Easy", "opts": ["9", "10", "11", "Infinite"], "ans": "B"},
-            {"text": "Which of these is used to declare an array in C++?", "diff": "Easy", "opts": ["int a[];", "int a();", "int a{};", "array a;"], "ans": "A"},
-            {"text": "Arrays are _____ data structures.", "diff": "Easy", "opts": ["Linear", "Non-linear", "Hierarchical", "None"], "ans": "A"},
-            {"text": "Which property gives the number of elements in a Java array?", "diff": "Easy", "opts": ["size()", "count", "length", "index"], "ans": "C"},
-            {"text": "How do you find the length of an array in Python?", "diff": "Easy", "opts": ["length(arr)", "arr.length", "len(arr)", "size(arr)"], "ans": "C"},
-            {"text": "What is a 1D array?", "diff": "Easy", "opts": ["A matrix", "A list of elements", "A single value", "A pointer"], "ans": "B"},
-            {"text": "In C, what is the default value of local array elements?", "diff": "Easy", "opts": ["0", "NULL", "Garbage value", "1"], "ans": "C"},
-            {"text": "Can an array store different data types in C++?", "diff": "Easy", "opts": ["Yes", "No", "Only if it's a float", "Depends on compiler"], "ans": "B"},
+            # Easy (15 total)
+            ["What is the index of the first element?", "Easy", ["0", "1", "-1", "n"], "A"],
+            ["Which operation is O(1)?", "Easy", ["Search", "Access", "Delete", "Insert"], "B"],
+            ["Max elements in array of size 10?", "Easy", ["9", "10", "11", "0"], "B"],
+            ["Declare array in C++?", "Easy", ["int a[];", "int a();", "int a{};", "a[]"], "A"],
+            ["Arrays are _____ structures.", "Easy", ["Linear", "Non-linear", "Tree", "Graph"], "A"],
+            ["Java array length property?", "Easy", ["size()", "count", "length", "len"], "C"],
+            ["Python array length?", "Easy", ["len()", "size()", "count()", "length"], "A"],
+            ["What is a 1D array?", "Easy", ["Matrix", "List", "Point", "Scalar"], "B"],
+            ["C local array default value?", "Easy", ["0", "NULL", "Garbage", "1"], "C"],
+            ["Can C++ arrays store mixed types?", "Easy", ["Yes", "No", "Maybe", "Depends"], "B"],
+            ["Minimum array elements?", "Easy", ["0", "1", "-1", "Any"], "A"],
+            ["Arrays in C use _____ memory.", "Easy", ["Contiguous", "Random", "Virtual", "Heap"], "A"],
+            ["Array indexing usually starts at?", "Easy", ["0", "1", "-1", "Random"], "A"],
+            ["Is an array a primitive type in Java?", "Easy", ["Yes", "No", "Sometimes", "Only int"], "B"],
+            ["What is the last index of array size N?", "Easy", ["N", "N+1", "N-1", "0"], "C"],
             
-            # Medium
-            {"text": "What is the time complexity of a linear search in an array of size n?", "diff": "Medium", "opts": ["O(1)", "O(log n)", "O(n)", "O(n^2)"], "ans": "C"},
-            {"text": "In a 2D array declared as A[3][4], how many total elements are there?", "diff": "Medium", "opts": ["7", "12", "10", "16"], "ans": "B"},
-            {"text": "What happens if you try to access an index outside the array bounds in Java?", "diff": "Medium", "opts": ["Returns null", "Returns 0", "Throws Exception", "Crashes OS"], "ans": "C"},
-            {"text": "Which sorting algorithm has a best-case complexity of O(n) for a nearly sorted array?", "diff": "Medium", "opts": ["Quick Sort", "Selection Sort", "Insertion Sort", "Merge Sort"], "ans": "C"},
-            {"text": "What is a 'sparse array'?", "diff": "Medium", "opts": ["An array with many zeros", "An array with no elements", "An array with prime numbers", "A small array"], "ans": "A"},
-            {"text": "What is the time complexity of binary search on a sorted array?", "diff": "Medium", "opts": ["O(n)", "O(log n)", "O(1)", "O(n log n)"], "ans": "B"},
-            {"text": "What is the space complexity of an array of size N?", "diff": "Medium", "opts": ["O(1)", "O(N)", "O(log N)", "O(N^2)"], "ans": "B"},
-            {"text": "Which of the following is an advantage of arrays?", "diff": "Medium", "opts": ["Dynamic size", "Ease of insertion", "Fast random access", "No wasted memory"], "ans": "C"},
-            {"text": "In a row-major 2D array, how are elements stored?", "diff": "Medium", "opts": ["Column by column", "Row by row", "Diagonally", "Randomly"], "ans": "B"},
-            
-            # Hard
-            {"text": "What is the time complexity to find the 'Missing Number' in an unsorted array of 1 to N using the sum formula?", "diff": "Hard", "opts": ["O(n log n)", "O(n)", "O(1)", "O(n^2)"], "ans": "B"},
-            {"text": "Which algorithm is most efficient for finding the 'Majority Element' in an array?", "diff": "Hard", "opts": ["Binary Search", "Boyer-Moore Voting", "Sieve of Eratosthenes", "Kadane's Algorithm"], "ans": "B"},
-            {"text": "Kadane's Algorithm is used for which problem?", "diff": "Hard", "opts": ["Sorting", "Max Subarray Sum", "Matrix Multiplication", "String Matching"], "ans": "B"},
-            {"text": "How do you find the duplicate in an array of N+1 integers where elements are 1 to N using O(1) extra space?", "diff": "Hard", "opts": ["Hashing", "Sorting", "Floyd's Cycle Finding", "Linear Search"], "ans": "C"},
-            {"text": "What is the time complexity of the Dutch National Flag algorithm?", "diff": "Hard", "opts": ["O(n)", "O(n log n)", "O(n^2)", "O(1)"], "ans": "A"},
-            {"text": "Which of these can find the K-th smallest element in O(n) average time?", "diff": "Hard", "opts": ["Merge Sort", "Quick Select", "Heap Sort", "Bubble Sort"], "ans": "B"},
-            {"text": "What is the amortized time complexity of appending to a dynamic array?", "diff": "Hard", "opts": ["O(n)", "O(log n)", "O(1)", "O(n^2)"], "ans": "C"},
+            # Medium (15 total)
+            ["Linear search complexity?", "Medium", ["O(1)", "O(log n)", "O(n)", "O(n^2)"], "C"],
+            ["Elements in A[3][4]?", "Medium", ["7", "12", "10", "16"], "B"],
+            ["Java out of bounds result?", "Medium", ["Null", "0", "Exception", "Crash"], "C"],
+            ["Sort with O(n) best case?", "Medium", ["Quick", "Selection", "Insertion", "Merge"], "C"],
+            ["What is a sparse array?", "Medium", ["Many zeros", "Empty", "Prime only", "Small"], "A"],
+            ["Binary search complexity?", "Medium", ["O(n)", "O(log n)", "O(1)", "O(n!)"], "B"],
+            ["Space complexity of size N array?", "Medium", ["O(1)", "O(N)", "O(N^2)", "O(log N)"], "B"],
+            ["Array advantage?", "Medium", ["Dynamic size", "Easy insert", "Fast access", "No waste"], "C"],
+            ["Row-major storage?", "Medium", ["Col by Col", "Row by Row", "Diagonal", "None"], "B"],
+            ["Dynamic array append (average)?", "Medium", ["O(1)", "O(n)", "O(log n)", "O(n^2)"], "A"],
+            ["C resize function?", "Medium", ["malloc", "calloc", "realloc", "free"], "C"],
+            ["Array to represent Heap?", "Medium", ["Yes", "No", "Only Max Heap", "Only Min Heap"], "A"],
+            ["Base address is address of?", "Medium", ["Last element", "Middle", "First element", "Size"], "C"],
+            ["Searching in unsorted array?", "Medium", ["Binary", "Linear", "Interpolation", "None"], "B"],
+            ["2D array is also called?", "Medium", ["Vector", "Matrix", "List", "Queue"], "B"],
+
+            # Hard (10 total)
+            ["Find missing number in 1..N?", "Hard", ["O(n log n)", "O(n)", "O(1)", "O(n^2)"], "B"],
+            ["Majority element algorithm?", "Hard", ["Binary", "Boyer-Moore", "Sieve", "Kadane"], "B"],
+            ["Kadane's used for?", "Hard", ["Sort", "Max Subarray", "Matrix", "Match"], "B"],
+            ["Duplicate in 1..N with O(1) space?", "Hard", ["Hash", "Sort", "Floyd's Cycle", "Linear"], "C"],
+            ["Dutch National Flag complexity?", "Hard", ["O(n)", "O(n log n)", "O(n^2)", "O(1)"], "A"],
+            ["K-th smallest in O(n) avg?", "Hard", ["Merge", "Quick Select", "Heap", "Bubble"], "B"],
+            ["Dynamic array amortized append?", "Hard", ["O(n)", "O(log n)", "O(1)", "O(n^2)"], "C"],
+            ["Sliding window max complexity?", "Hard", ["O(NK)", "O(N log N)", "O(N)", "O(N log K)"], "C"],
+            ["Range Sum Query with updates?", "Hard", ["Hash", "Fenwick Tree", "Stack", "Queue"], "B"],
+            ["Rain water trapping complexity?", "Hard", ["O(N^2)", "O(N log N)", "O(N)", "O(1)"], "C"]
         ],
         "SQL": [
-            # Easy
-            {"text": "Which command is used to fetch data from a table?", "diff": "Easy", "opts": ["GET", "FETCH", "SELECT", "READ"], "ans": "C"},
-            {"text": "What does SQL stand for?", "diff": "Easy", "opts": ["Structured Query Language", "Simple Query Logic", "Schema Query List", "Sequential Query Link"], "ans": "A"},
-            {"text": "Which clause is used to filter records?", "diff": "Easy", "opts": ["GROUP BY", "WHERE", "ORDER BY", "HAVING"], "ans": "B"},
-            {"text": "How do you return all columns from a table named 'Users'?", "diff": "Easy", "opts": ["SELECT ALL Users", "SELECT * FROM Users", "GET * FROM Users", "EXTRACT Users"], "ans": "B"},
-            {"text": "Which SQL keyword is used to sort the result-set?", "diff": "Easy", "opts": ["SORT", "ARRANGE", "ORDER BY", "SET"], "ans": "C"},
-            {"text": "Which command is used to insert new data into a table?", "diff": "Easy", "opts": ["ADD RECORD", "INSERT INTO", "PUT", "UPDATE"], "ans": "B"},
-            {"text": "Which statement is used to delete data from a database?", "diff": "Easy", "opts": ["COLLAPSE", "REMOVE", "DELETE", "DROP"], "ans": "C"},
-            {"text": "Which keyword is used to return only different values?", "diff": "Easy", "opts": ["UNIQUE", "DISTINCT", "DIFFERENT", "SELECT"], "ans": "B"},
-            {"text": "Which SQL command is used to update data in a table?", "diff": "Easy", "opts": ["SAVE", "MODIFY", "UPDATE", "CHANGE"], "ans": "C"},
+            # Easy (15 total)
+            ["Command to fetch data?", "Easy", ["GET", "FETCH", "SELECT", "READ"], "C"],
+            ["SQL stands for?", "Easy", ["Structured", "Simple", "Schema", "Sequential"], "A"],
+            ["Clause to filter records?", "Easy", ["GROUP", "WHERE", "ORDER", "HAVING"], "B"],
+            ["Select all columns?", "Easy", ["ALL", "*", "EVERY", "COLUMNS"], "B"],
+            ["Keyword to sort?", "Easy", ["SORT", "ARRANGE", "ORDER BY", "SET"], "C"],
+            ["Insert data command?", "Easy", ["ADD", "INSERT INTO", "PUT", "UPDATE"], "B"],
+            ["Delete data statement?", "Easy", ["COLLAPSE", "REMOVE", "DELETE", "DROP"], "C"],
+            ["Unique values keyword?", "Easy", ["UNIQUE", "DISTINCT", "DIFF", "SELECT"], "B"],
+            ["Update data command?", "Easy", ["SAVE", "MODIFY", "UPDATE", "CHANGE"], "C"],
+            ["Create database command?", "Easy", ["MAKE", "NEW", "CREATE DATABASE", "ADD"], "C"],
+            ["Delete table structure?", "Easy", ["DELETE", "REMOVE", "DROP", "TRUNCATE"], "C"],
+            ["Check for NULL?", "Easy", ["= NULL", "IS NULL", "== NULL", "NOT NULL"], "B"],
+            ["Wildcard for multiple chars?", "Easy", ["?", "*", "%", "$"], "C"],
+            ["Primary Key must be?", "Easy", ["Unique", "NULL", "Duplicate", "String"], "A"],
+            ["Join two tables keyword?", "Easy", ["LINK", "JOIN", "CONNECT", "UNION"], "B"],
             
-            # Medium
-            {"text": "Which join returns all records when there is a match in either left or right table?", "diff": "Medium", "opts": ["INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "FULL OUTER JOIN"], "ans": "D"},
-            {"text": "Which aggregate function returns the number of rows?", "diff": "Medium", "opts": ["SUM()", "TOTAL()", "COUNT()", "ROWS()"], "ans": "C"},
-            {"text": "What is the difference between DELETE and TRUNCATE?", "diff": "Medium", "opts": ["No difference", "TRUNCATE can be rolled back", "DELETE is DDL", "TRUNCATE is faster and DDL"], "ans": "D"},
-            {"text": "Which constraint uniquely identifies each record in a table?", "diff": "Medium", "opts": ["UNIQUE", "FOREIGN KEY", "PRIMARY KEY", "CHECK"], "ans": "C"},
-            {"text": "The HAVING clause is used in combination with ______.", "diff": "Medium", "opts": ["ORDER BY", "GROUP BY", "WHERE", "JOIN"], "ans": "B"},
-            {"text": "What is the default sort order for ORDER BY?", "diff": "Medium", "opts": ["DESC", "ASC", "Random", "Numerical"], "ans": "B"},
-            {"text": "Which operator is used to search for a specified pattern in a column?", "diff": "Medium", "opts": ["GET", "MATCH", "LIKE", "FIND"], "ans": "C"},
-            {"text": "What does the UNION operator do?", "diff": "Medium", "opts": ["Joins two tables", "Combines result-sets of two SELECTs", "Updates two tables", "Deletes duplicates in one table"], "ans": "B"},
-            
-            # Hard
-            {"text": "What is the purpose of a 'Normalization' in databases?", "diff": "Hard", "opts": ["Increase redundancy", "Reduce redundancy", "Speed up SELECTs only", "Encrypt data"], "ans": "B"},
-            {"text": "Which normal form deals with Transitive Dependency?", "diff": "Hard", "opts": ["1NF", "2NF", "3NF", "BCNF"], "ans": "C"},
-            {"text": "What is an 'Index' in SQL used for?", "diff": "Hard", "opts": ["Backup data", "Speed up data retrieval", "Encrypt primary keys", "Group records"], "ans": "B"},
-            {"text": "What is the 'ACID' property 'I' stand for?", "diff": "Hard", "opts": ["Information", "Integration", "Isolation", "Indexing"], "ans": "C"},
-            {"text": "Which normal form requires that there are no partial functional dependencies?", "diff": "Hard", "opts": ["1NF", "2NF", "3NF", "4NF"], "ans": "B"},
-            {"text": "What is a 'Composite Key'?", "diff": "Hard", "opts": ["A key with multiple columns", "A key that links to another table", "A hidden key", "A string-based key"], "ans": "A"},
-            {"text": "What is the difference between WHERE and HAVING?", "diff": "Hard", "opts": ["No difference", "WHERE is for groups, HAVING for rows", "WHERE is for rows, HAVING for groups", "WHERE is faster"], "ans": "C"},
+            # Medium (15 total)
+            ["Match in either table?", "Medium", ["INNER", "LEFT", "RIGHT", "FULL OUTER"], "D"],
+            ["Function for row count?", "Medium", ["SUM", "TOTAL", "COUNT", "ROWS"], "C"],
+            ["DELETE vs TRUNCATE?", "Medium", ["None", "TRUNCATE rollback", "DELETE DDL", "TRUNCATE DDL"], "D"],
+            ["Unique record ID?", "Medium", ["UNIQUE", "FOREIGN", "PRIMARY", "CHECK"], "C"],
+            ["HAVING used with?", "Medium", ["ORDER", "GROUP BY", "WHERE", "JOIN"], "B"],
+            ["Default ORDER BY?", "Medium", ["DESC", "ASC", "Random", "None"], "B"],
+            ["Pattern search operator?", "Medium", ["GET", "MATCH", "LIKE", "FIND"], "C"],
+            ["UNION purpose?", "Medium", ["Join", "Combine SELECTs", "Update", "Delete"], "B"],
+            ["Change table structure?", "Medium", ["CHANGE", "MODIFY", "ALTER", "UPDATE"], "C"],
+            ["Foreign Key purpose?", "Medium", ["Unique", "Relationship", "Backup", "Index"], "B"],
+            ["String concatenation in SQL?", "Medium", ["+", "CONCAT()", "&&", "||"], "B"],
+            ["Index purpose?", "Medium", ["Security", "Speed", "Space", "Backup"], "B"],
+            ["BETWEEN is inclusive?", "Medium", ["Yes", "No", "Depends on DB", "Only for dates"], "A"],
+            ["IN operator checks for?", "Medium", ["Range", "List of values", "Pattern", "Null"], "B"],
+            ["AS keyword is for?", "Medium", ["Sort", "Alias", "Filter", "Join"], "B"],
+
+            # Hard (10 total)
+            ["Normalization purpose?", "Hard", ["Increase redundancy", "Reduce redundancy", "Speed", "Encrypt"], "B"],
+            ["Transitive Dependency form?", "Hard", ["1NF", "2NF", "3NF", "BCNF"], "C"],
+            ["ACID 'I' stands for?", "Hard", ["Info", "Integrate", "Isolation", "Index"], "C"],
+            ["Partial dependency form?", "Hard", ["1NF", "2NF", "3NF", "4NF"], "B"],
+            ["Composite Key definition?", "Hard", ["Multi-column", "Foreign", "Hidden", "String"], "A"],
+            ["WHERE vs HAVING?", "Hard", ["None", "Row vs Group", "Group vs Row", "Speed"], "B"],
+            ["Stored Procedure?", "Hard", ["Table", "Precompiled SQL", "Backup", "Log"], "B"],
+            ["Revoke privileges?", "Hard", ["DENY", "REMOVE", "REVOKE", "UNGRANT"], "C"],
+            ["What is a View?", "Hard", ["Backup", "Virtual Table", "Physical Copy", "GUI"], "B"],
+            ["ACID 'D' stands for?", "Hard", ["Data", "Durability", "Delete", "Design"], "B"]
         ],
-        "Linked Lists and Pointers": [
-            # Easy
-            {"text": "A linked list is a _____ data structure.", "diff": "Easy", "opts": ["Sequential", "Random Access", "Non-linear", "Constant"], "ans": "A"},
-            {"text": "What does each node in a singly linked list contain?", "diff": "Easy", "opts": ["Data only", "Address only", "Data and Pointer", "Two pointers"], "ans": "C"},
-            {"text": "What is a pointer?", "diff": "Easy", "opts": ["A variable that stores data", "A variable that stores address", "A function", "A loop"], "ans": "B"},
-            {"text": "What is the value of the 'next' pointer in the last node of a linked list?", "diff": "Easy", "opts": ["0", "Head", "NULL", "Random"], "ans": "C"},
-            {"text": "Which operator is used to access members of a struct through a pointer in C?", "diff": "Easy", "opts": [".", "->", "&", "*"], "ans": "B"},
-            {"text": "In C++, how do you get the address of a variable 'x'?", "diff": "Easy", "opts": ["*x", "addr(x)", "&x", "$x"], "ans": "C"},
-            {"text": "Which memory area is used for dynamic memory allocation?", "diff": "Easy", "opts": ["Stack", "Heap", "Register", "Static"], "ans": "B"},
-            {"text": "What happens if a pointer is not initialized?", "diff": "Easy", "opts": ["Points to NULL", "Points to 0", "Points to random memory", "Compiler error"], "ans": "C"},
+        "Object Oriented Programming (OOP)": [
+            # Easy (15 total)
+            ["OOP Full Form?", "Easy", ["Object Oriented Programming", "Open", "Office", "Object Open"], "A"],
+            ["Fundamental Pillar?", "Easy", ["Recursion", "Inheritance", "Sort", "Loop"], "B"],
+            ["Class is a _____?", "Easy", ["Method", "Blueprint", "Variable", "Package"], "B"],
+            ["Java object creation keyword?", "Easy", ["class", "create", "new", "this"], "C"],
+            ["Wrapping data/methods?", "Easy", ["Inherit", "Poly", "Encapsulation", "Abstract"], "C"],
+            ["Non-OOP language?", "Easy", ["C", "C++", "Python", "Java"], "A"],
+            ["Instance of a class?", "Easy", ["Object", "Method", "Member", "Constructor"], "A"],
+            ["Inheritance keyword in Java?", "Easy", ["implements", "extends", "inherits", "using"], "B"],
+            ["Access modifier for all?", "Easy", ["private", "public", "protected", "internal"], "B"],
+            ["Python OOP self refers to?", "Easy", ["Class", "Object", "Global", "None"], "B"],
+            ["Destructor in C++ starts with?", "Easy", ["*", "&", "~", "!"], "C"],
+            ["Does Python support private?", "Easy", ["Yes", "No", "Only for ints", "By convention"], "D"],
+            ["Smallest unit of OOP?", "Easy", ["Class", "Method", "Object", "Variable"], "C"],
+            ["Can a class have multiple objects?", "Easy", ["No", "Yes", "Only two", "Depends on RAM"], "B"],
+            ["OOP focuses on?", "Easy", ["Logic", "Data/Objects", "Procedures", "Flow"], "B"],
             
-            # Medium
-            {"text": "What is the time complexity to insert a node at the beginning of a singly linked list?", "diff": "Medium", "opts": ["O(1)", "O(n)", "O(log n)", "O(n^2)"], "ans": "A"},
-            {"text": "A doubly linked list node contains how many pointers?", "diff": "Medium", "opts": ["1", "2", "3", "0"], "ans": "B"},
-            {"text": "What is 'Memory Leak' in C++?", "diff": "Medium", "opts": ["Running out of RAM", "Not deleting dynamic memory", "Computer crash", "Virtual memory overflow"], "ans": "B"},
-            {"text": "Which data structure uses the 'Circular' concept where the last node points to the first?", "diff": "Medium", "opts": ["Stack", "Circular Queue", "Circular Linked List", "Tree"], "ans": "C"},
-            {"text": "What is a 'Dangling Pointer'?", "diff": "Medium", "opts": ["A NULL pointer", "Pointer to deleted memory", "Uninitialized pointer", "Pointer to an array"], "ans": "B"},
-            {"text": "What is the time complexity to access the n-th element in a linked list?", "diff": "Medium", "opts": ["O(1)", "O(n)", "O(log n)", "O(n^2)"], "ans": "B"},
-            {"text": "Which of these is NOT an advantage of Linked Lists over Arrays?", "diff": "Medium", "opts": ["Dynamic size", "Ease of insertion", "Random access", "No memory wastage"], "ans": "C"},
-            
-            # Hard
-            {"text": "How do you detect a cycle in a linked list?", "diff": "Hard", "opts": ["Binary Search", "Hash Map", "Floyd's Tortoise and Hare", "Recursion"], "ans": "C"},
-            {"text": "What is the time complexity to reverse a singly linked list?", "diff": "Hard", "opts": ["O(n^2)", "O(log n)", "O(n)", "O(1)"], "ans": "C"},
-            {"text": "Which pointer points to the entire array and not just the first element?", "diff": "Hard", "opts": ["Wild pointer", "Array pointer", "Base pointer", "Null pointer"], "ans": "B"},
-            {"text": "How can you find the middle element of a linked list in one pass?", "diff": "Hard", "opts": ["Calculate length then traverse", "Two pointers (fast and slow)", "Random search", "Using a stack"], "ans": "B"},
-            {"text": "In a skip list, what is the average search time complexity?", "diff": "Hard", "opts": ["O(n)", "O(log n)", "O(1)", "O(n log n)"], "ans": "B"},
-            {"text": "What is a XOR Linked List?", "diff": "Hard", "opts": ["A list with no data", "A list using XOR to save pointer space", "A list with multiple heads", "A tree-like list"], "ans": "B"},
-        ],
-        "Graphs and Trees": [
-             # Easy
-            {"text": "A tree with no nodes is called a ______.", "diff": "Easy", "opts": ["Empty tree", "Null tree", "Rootless tree", "Binary tree"], "ans": "B"},
-            {"text": "How many children can a node in a Binary Tree have?", "diff": "Easy", "opts": ["Exactly 2", "At most 2", "At least 2", "Infinite"], "ans": "B"},
-            {"text": "Which traversal visits the root first, then left, then right?", "diff": "Easy", "opts": ["Inorder", "Preorder", "Postorder", "Level-order"], "ans": "B"},
-            {"text": "What is the top-most node of a tree called?", "diff": "Easy", "opts": ["Leaf", "Stem", "Root", "Parent"], "ans": "C"},
-            {"text": "A graph with no cycles is called a ______.", "diff": "Easy", "opts": ["Acyclic graph", "Cyclic graph", "Complete graph", "Connected graph"], "ans": "A"},
-            {"text": "Nodes with no children are called ______.", "diff": "Easy", "opts": ["Root", "Internal nodes", "Leaves", "Sibs"], "ans": "C"},
-            {"text": "In a tree, what is a node with at least one child called?", "diff": "Easy", "opts": ["Leaf", "Internal Node", "Root only", "Edge"], "ans": "B"},
-            
-            # Medium
-            {"text": "Which algorithm is used for finding the shortest path in a weighted graph?", "diff": "Medium", "opts": ["BFS", "DFS", "Dijkstra's", "Kruskal's"], "ans": "C"},
-            {"text": "What is the height of a balanced binary tree with N nodes?", "diff": "Medium", "opts": ["O(N)", "O(log N)", "O(N^2)", "O(1)"], "ans": "B"},
-            {"text": "A Full Binary Tree is one where every node has either _____ children.", "diff": "Medium", "opts": ["0 or 1", "1 or 2", "0 or 2", "Exactly 2"], "ans": "C"},
-            {"text": "In a graph, BFS uses which data structure?", "diff": "Medium", "opts": ["Stack", "Queue", "Priority Queue", "Linked List"], "ans": "B"},
-            {"text": "In a Binary Search Tree (BST), the left child is always _____ than the parent.", "diff": "Medium", "opts": ["Greater", "Smaller", "Equal", "None"], "ans": "B"},
-            {"text": "Which traversal of a BST gives elements in sorted order?", "diff": "Medium", "opts": ["Preorder", "Postorder", "Inorder", "Level-order"], "ans": "C"},
-            {"text": "In DFS, which data structure is used?", "diff": "Medium", "opts": ["Queue", "Stack", "Heap", "Array"], "ans": "B"},
-            
-            # Hard
-            {"text": "Which algorithm is used to find the Minimum Spanning Tree?", "diff": "Hard", "opts": ["Bellman-Ford", "Prim's", "Floyd-Warshall", "PageRank"], "ans": "B"},
-            {"text": "What is the time complexity of searching in a Red-Black Tree?", "diff": "Hard", "opts": ["O(n)", "O(log n)", "O(n log n)", "O(1)"], "ans": "B"},
-            {"text": "A 'Self-Balancing' BST is which of these?", "diff": "Hard", "opts": ["AVL Tree", "Binary Heap", "B-Tree", "Trie"], "ans": "A"},
-            {"text": "What is the maximum number of edges in a directed graph with N vertices?", "diff": "Hard", "opts": ["N", "N-1", "N(N-1)", "N^2"], "ans": "C"},
-            {"text": "What is the time complexity of the Bellman-Ford algorithm?", "diff": "Hard", "opts": ["O(V+E)", "O(E log V)", "O(VE)", "O(V^2)"], "ans": "C"},
-            {"text": "A 'B-Tree' is typically used in which application?", "diff": "Hard", "opts": ["Compilers", "Databases", "Networking", "AI"], "ans": "B"},
-        ],
-        "Time Complexities and Algorithms": [
-            # Easy
-            {"text": "What is the best case time complexity of Binary Search?", "diff": "Easy", "opts": ["O(1)", "O(log n)", "O(n)", "O(n log n)"], "ans": "A"},
-            {"text": "Which algorithm uses the 'Divide and Conquer' strategy?", "diff": "Easy", "opts": ["Bubble Sort", "Merge Sort", "Linear Search", "Insertion Sort"], "ans": "B"},
-            {"text": "O(1) is also known as _____ time.", "diff": "Easy", "opts": ["Linear", "Logarithmic", "Constant", "Quadratic"], "ans": "C"},
-            {"text": "Which sort is generally the slowest for large datasets?", "diff": "Easy", "opts": ["Quick Sort", "Merge Sort", "Bubble Sort", "Heap Sort"], "ans": "C"},
-            {"text": "What is the time complexity of adding an element to a stack?", "diff": "Easy", "opts": ["O(1)", "O(n)", "O(log n)", "O(n^2)"], "ans": "A"},
-            {"text": "Recursion uses which internal data structure?", "diff": "Easy", "opts": ["Queue", "Stack", "Tree", "Graph"], "ans": "B"},
-            {"text": "What is the time complexity of Bubble Sort in the worst case?", "diff": "Easy", "opts": ["O(n)", "O(n log n)", "O(n^2)", "O(1)"], "ans": "C"},
-            
-            # Medium
-            {"text": "What is the average time complexity of Quick Sort?", "diff": "Medium", "opts": ["O(n log n)", "O(n^2)", "O(n)", "O(log n)"], "ans": "A"},
-            {"text": "The 'Big O' notation describes the _____ bound of an algorithm.", "diff": "Medium", "opts": ["Lower", "Upper", "Average", "Tight"], "ans": "B"},
-            {"text": "Which algorithm is used to find the GCD of two numbers?", "diff": "Medium", "opts": ["Sieve", "Euclidean Algorithm", "Binary Search", "Dijkstra"], "ans": "B"},
-            {"text": "What is the time complexity of the Sieve of Eratosthenes?", "diff": "Medium", "opts": ["O(n)", "O(n log n)", "O(n log log n)", "O(n^2)"], "ans": "C"},
-            {"text": "Space complexity of an algorithm refers to _____.", "diff": "Medium", "opts": ["Time taken", "Memory used", "Lines of code", "Number of variables"], "ans": "B"},
-            {"text": "What is the time complexity of selection sort?", "diff": "Medium", "opts": ["O(n log n)", "O(n)", "O(n^2)", "O(1)"], "ans": "C"},
-            {"text": "Merge sort uses which design paradigm?", "diff": "Medium", "opts": ["Greedy", "Dynamic Programming", "Divide and Conquer", "Backtracking"], "ans": "C"},
-            
-            # Hard
-            {"text": "Dynamic Programming is based on which concept?", "diff": "Hard", "opts": ["Recursion", "Overlapping Subproblems", "Greedy choice", "Randomization"], "ans": "B"},
-            {"text": "What is the worst case time complexity of Quick Sort?", "diff": "Hard", "opts": ["O(n log n)", "O(n^2)", "O(n^3)", "O(2^n)"], "ans": "B"},
-            {"text": "Which problem cannot be solved using a Greedy approach?", "diff": "Hard", "opts": ["Huffman Coding", "Prim's Algorithm", "0/1 Knapsack", "Activity Selection"], "ans": "C"},
-            {"text": "What is the time complexity of Matrix Multiplication (Naive)?", "diff": "Hard", "opts": ["O(n^2)", "O(n^3)", "O(n log n)", "O(2^n)"], "ans": "B"},
-            {"text": "What is the time complexity of the KMP string matching algorithm?", "diff": "Hard", "opts": ["O(n*m)", "O(n+m)", "O(n log n)", "O(n^2)"], "ans": "B"},
-            {"text": "The Floyd-Warshall algorithm is used for ______.", "diff": "Hard", "opts": ["MST", "All-pairs shortest paths", "Topological sort", "Network flow"], "ans": "B"},
-        ],
-        "Aptitude + Logic and Reasoning": [
-            # Easy
-            {"text": "If 5 workers can build a wall in 5 days, how long will it take 10 workers?", "diff": "Easy", "opts": ["10 days", "5 days", "2.5 days", "1 day"], "ans": "C"},
-            {"text": "Look at this series: 2, 4, 8, 16, ... What number comes next?", "diff": "Easy", "opts": ["20", "24", "32", "64"], "ans": "C"},
-            {"text": "Which word does NOT belong with the others?", "diff": "Easy", "opts": ["Leopard", "Cougar", "Tiger", "Elephant"], "ans": "D"},
-            {"text": "If all roses are flowers and some flowers fade, can we say all roses fade?", "diff": "Easy", "opts": ["Yes", "No", "Maybe", "Depends on weather"], "ans": "B"},
-            {"text": "A father is 30 years older than his son. In 5 years, he will be 3 times as old. Son's age?", "diff": "Easy", "opts": ["5", "10", "15", "20"], "ans": "B"},
-            {"text": "What is 15% of 200?", "diff": "Easy", "opts": ["20", "30", "40", "15"], "ans": "B"},
-            {"text": "A clock shows 4:30. If the minute hand points East, where does the hour hand point?", "diff": "Easy", "opts": ["North", "South", "North-East", "South-East"], "ans": "C"},
-            
-            # Medium
-            {"text": "A train 100m long passes a pole in 10s. What is its speed in km/h?", "diff": "Medium", "opts": ["36", "40", "45", "50"], "ans": "A"},
-            {"text": "In a row of 20 people, if A is 5th from left, what is his position from right?", "diff": "Medium", "opts": ["15th", "16th", "14th", "17th"], "ans": "B"},
-            {"text": "Pointing to a man, a woman said, 'His mother is the only daughter of my mother.' How is the man related to the woman?", "diff": "Medium", "opts": ["Brother", "Father", "Son", "Husband"], "ans": "C"},
-            {"text": "What is the angle between the hour and minute hand at 3:00?", "diff": "Medium", "opts": ["45°", "90°", "60°", "120°"], "ans": "B"},
-            {"text": "If NOON is coded as 14151514, what is MOON?", "diff": "Medium", "opts": ["13151514", "13141413", "14151513", "12151514"], "ans": "A"},
-            {"text": "A sum of money doubles itself in 10 years at simple interest. What is the rate?", "diff": "Medium", "opts": ["5%", "10%", "15%", "20%"], "ans": "B"},
-            
-            # Hard
-            {"text": "In how many ways can the letters of 'APPLE' be rearranged?", "diff": "Hard", "opts": ["120", "60", "24", "100"], "ans": "B"},
-            {"text": "A bag has 3 red and 2 blue balls. If 2 balls are drawn, probability both are red?", "diff": "Hard", "opts": ["3/10", "1/5", "2/5", "1/2"], "ans": "A"},
-            {"text": "Six people sit in a circle. In how many ways can they be seated?", "diff": "Hard", "opts": ["720", "120", "60", "240"], "ans": "B"},
-            {"text": "If 3rd Jan of a year is Sunday, what will be 15th Feb (Non-leap year)?", "diff": "Hard", "opts": ["Monday", "Tuesday", "Sunday", "Saturday"], "ans": "A"},
-            {"text": "The ratio of ages of A and B is 4:5. After 5 years, it will be 5:6. Sum of their current ages?", "diff": "Hard", "opts": ["45", "40", "50", "35"], "ans": "A"},
-            {"text": "In a group of 100 people, 60 like tea, 40 like coffee, and 20 like both. How many like neither?", "diff": "Hard", "opts": ["20", "10", "30", "0"], "ans": "A"},
+            # Medium (15 total)
+            ["Polymorphism definition?", "Medium", ["Hiding", "Many forms", "Multi-objects", "Reuse"], "B"],
+            ["Constructor purpose?", "Medium", ["Destroy", "Initialize", "Sort", "Link"], "B"],
+            ["Java missing inheritance?", "Medium", ["Single", "Multiple", "Multilevel", "Hierar"], "B"],
+            ["'this' keyword refers to?", "Medium", ["Static", "Current Object", "Class", "Parent"], "B"],
+            ["Hiding details, showing function?", "Medium", ["Abstract", "Encapsulation", "Inherit", "Poly"], "A"],
+            ["Modifier for same package?", "Medium", ["private", "public", "protected", "default"], "D"],
+            ["Static method can access?", "Medium", ["Instance vars", "Static vars", "Both", "Neither"], "B"],
+            ["Overloading is ______?", "Medium", ["Compile-time", "Runtime", "Both", "None"], "A"],
+            ["Super keyword refers to?", "Medium", ["Child", "Parent", "Global", "Current"], "B"],
+            ["Final class cannot be ______?", "Medium", ["Instantiated", "Inherited", "Modified", "Deleted"], "B"],
+            ["Method signature includes?", "Medium", ["Return type", "Name/Params", "Body", "Access"], "B"],
+            ["Abstract class can have body?", "Medium", ["Yes", "No", "Only in Java", "Only in C++"], "A"],
+            ["Interface members are by default?", "Medium", ["Private", "Public/Abstract", "Static", "Final"], "B"],
+            ["Multiple inheritance in C++?", "Medium", ["Yes", "No", "Only for structs", "Virtual only"], "A"],
+            ["Friend function can access?", "Medium", ["Public", "Private", "Global", "Nothing"], "B"],
+
+            # Hard (10 total)
+            ["Abstract Class instantiation?", "Hard", ["Can", "Cannot", "Only if static", "Only if final"], "B"],
+            ["Overloading vs Overriding?", "Hard", ["None", "Compile vs Runtime", "Runtime vs Compile", "Sort"], "B"],
+            ["What is an Interface?", "Hard", ["Screen", "Contract", "Type", "Private"], "B"],
+            ["Diamond Problem is in ______?", "Hard", ["Bug", "Multiple Inheritance", "Memory", "Sort"], "B"],
+            ["Overriding demonstrates ______?", "Hard", ["Encapsulate", "Abstract", "Runtime Poly", "Static Poly"], "C"],
+            ["Pure Virtual Function makes class?", "Hard", ["Static", "Private", "Abstract", "Final"], "C"],
+            ["Virtual Destructor purpose?", "Hard", ["Speed", "Proper cleanup", "Security", "Space"], "B"],
+            ["Composition vs Inheritance?", "Hard", ["Same", "Has-a vs Is-a", "Is-a vs Has-a", "None"], "B"],
+            ["Shallow vs Deep Copy?", "Hard", ["Same", "Ref vs Value", "Value vs Ref", "Memory"], "B"],
+            ["Coupling in OOP should be?", "Hard", ["High", "Low", "Medium", "Zero"], "B"]
         ]
     }
 
     for topic_name, questions in data.items():
-        topic, _ = Topic.objects.get_or_create(name=topic_name)
-        
-        count = 0
-        for q in questions:
-            # Check if question with same text already exists for this topic
-            if not Question.objects.filter(topic=topic, text=q["text"]).exists():
-                Question.objects.create(
-                    topic=topic,
-                    text=q["text"],
-                    difficulty=q["diff"],
-                    option_a=q["opts"][0],
-                    option_b=q["opts"][1],
-                    option_c=q["opts"][2],
-                    option_d=q["opts"][3],
-                    correct_option=q["ans"]
-                )
-                count += 1
-        print(f"Added {count} new questions to {topic_name}")
+        add_questions(topic_name, questions)
 
 if __name__ == "__main__":
     populate()
